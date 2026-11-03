@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -104,6 +105,7 @@ class MainActivity : ComponentActivity() {
                 Modifier
                     .fillMaxSize()
                     .background(HudColors.Background)
+                    .statusBarsPadding()
             ) {
                 when (screen) {
                     HudScreen.HOME -> HomeScreen(
