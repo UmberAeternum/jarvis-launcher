@@ -89,7 +89,7 @@ const val SYSTEM_PROMPT =
 
 // ---------------------------------------------------------------- root
 
-enum class HudScreen { HOME, DRAWER, CHAT, SETTINGS }
+enum class HudScreen { HOME, DRAWER, CHAT, SETTINGS, DESKTOP }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +114,7 @@ class MainActivity : ComponentActivity() {
                         onOpenDrawer = { screen = HudScreen.DRAWER },
                         onOpenChat = { screen = HudScreen.CHAT },
                         onOpenSettings = { screen = HudScreen.SETTINGS },
+                        onOpenDesktop = { screen = HudScreen.DESKTOP },
                     )
                     HudScreen.DRAWER -> DrawerScreen(
                         apps = apps,
@@ -128,6 +129,10 @@ class MainActivity : ComponentActivity() {
                         saved = settings,
                         onBack = { screen = HudScreen.HOME },
                         onSaved = { settings = SettingsStore.load(context) },
+                    )
+                    HudScreen.DESKTOP -> DesktopScreen(
+                        settings = settings,
+                        onBack = { screen = HudScreen.HOME },
                     )
                 }
             }
@@ -144,6 +149,7 @@ fun HomeScreen(
     onOpenDrawer: () -> Unit,
     onOpenChat: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenDesktop: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -248,8 +254,10 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.Center,
         ) {
             HudButton("APPS ▲", onOpenDrawer)
-            Spacer(Modifier.width(14.dp))
+            Spacer(Modifier.width(12.dp))
             HudButton("CHAT ✦", onOpenChat)
+            Spacer(Modifier.width(12.dp))
+            HudButton("DESK ⌁", onOpenDesktop)
         }
     }
 }

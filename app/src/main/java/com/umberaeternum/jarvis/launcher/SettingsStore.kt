@@ -22,6 +22,8 @@ object SettingsStore {
         val model: String = "glm-4.6",
         val encrypted: Boolean = true,
         val configured: Boolean = false,
+        val desktopUrl: String = "",
+        val desktopToken: String = "",
     )
 
     fun load(context: Context): Settings {
@@ -33,6 +35,8 @@ object SettingsStore {
             key = prefs.getString("key", "") ?: "",
             model = prefs.getString("model", "glm-4.6") ?: "glm-4.6",
             encrypted = prefs.getBoolean("encrypted", true),
+            desktopUrl = prefs.getString("desktopUrl", "") ?: "",
+            desktopToken = prefs.getString("desktopToken", "") ?: "",
         )
         return settings.copy(configured = settings.key.isNotBlank() || settings.provider == "Ollama (local)")
     }
@@ -44,6 +48,8 @@ object SettingsStore {
             .putString("key", settings.key)
             .putString("model", settings.model)
             .putBoolean("encrypted", settings.encrypted)
+            .putString("desktopUrl", settings.desktopUrl)
+            .putString("desktopToken", settings.desktopToken)
             .apply()
     }
 
