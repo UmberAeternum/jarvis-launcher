@@ -89,7 +89,7 @@ const val SYSTEM_PROMPT =
 
 // ---------------------------------------------------------------- root
 
-enum class HudScreen { HOME, DRAWER, CHAT, SETTINGS, DESKTOP }
+enum class HudScreen { HOME, DRAWER, CHAT, SETTINGS, DESKTOP, HISTORY }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,6 +115,7 @@ class MainActivity : ComponentActivity() {
                         onOpenChat = { screen = HudScreen.CHAT },
                         onOpenSettings = { screen = HudScreen.SETTINGS },
                         onOpenDesktop = { screen = HudScreen.DESKTOP },
+                        onOpenHistory = { screen = HudScreen.HISTORY },
                     )
                     HudScreen.DRAWER -> DrawerScreen(
                         apps = apps,
@@ -134,6 +135,10 @@ class MainActivity : ComponentActivity() {
                         settings = settings,
                         onBack = { screen = HudScreen.HOME },
                     )
+                    HudScreen.HISTORY -> HistoryScreen(
+                        settings = settings,
+                        onBack = { screen = HudScreen.HOME },
+                    )
                 }
             }
         }
@@ -150,6 +155,7 @@ fun HomeScreen(
     onOpenChat: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenDesktop: () -> Unit,
+    onOpenHistory: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -250,14 +256,14 @@ fun HomeScreen(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 14.dp),
-            horizontalArrangement = Arrangement.Center,
+                .padding(vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             HudButton("APPS ▲", onOpenDrawer)
-            Spacer(Modifier.width(12.dp))
             HudButton("CHAT ✦", onOpenChat)
-            Spacer(Modifier.width(12.dp))
             HudButton("DESK ⌁", onOpenDesktop)
+            HudButton("LOG ≡", onOpenHistory)
         }
     }
 }

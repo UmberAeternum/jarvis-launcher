@@ -68,4 +68,12 @@ object DesktopClient {
             config, "/api/confirm", "POST",
             JSONObject().put("confirm_id", confirmId).put("approved", approved),
         ).isSuccess
+
+    /** Past desktop conversations (newest first, up to 20). Returns null on transport failure. */
+    fun history(config: DesktopConfig): JSONObject? =
+        request(config, "/api/history").getOrNull()
+
+    /** Messages of one desktop conversation (chronological). Returns null on transport failure. */
+    fun session(config: DesktopConfig, id: Int): JSONObject? =
+        request(config, "/api/session?id=$id").getOrNull()
 }

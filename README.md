@@ -1,4 +1,4 @@
-# J.A.R.V.I.S. Launcher — the Face (Android)
+# UMBRA Launcher — the Face (Android)
 
 [![CI](https://github.com/UmberAeternum/jarvis-launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/UmberAeternum/jarvis-launcher/actions/workflows/ci.yml)
 
