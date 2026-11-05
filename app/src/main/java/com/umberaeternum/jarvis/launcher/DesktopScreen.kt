@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -39,8 +40,10 @@ import kotlinx.coroutines.withContext
 
 /**
  * The Loop: command the desktop's full agent from the phone. Events
- * (status/tool/reply/confirm_request) stream in via long-poll; gated actions
- * surface as APPROVE/DENY - the same confirmation gate as the terminal.
+ * (status/partial/reply/confirm_request) stream in via long-poll; gated actions
+ * surface as APPROVE/DENY - the same confirmation gate as the terminal. While
+ * the agent composes, "partial" events feed a dimmed streaming bubble that the
+ * final "reply" replaces.
  */
 @Composable
 fun DesktopScreen(settings: SettingsStore.Settings, onBack: () -> Unit) {
@@ -51,6 +54,7 @@ fun DesktopScreen(settings: SettingsStore.Settings, onBack: () -> Unit) {
     var connected by remember { mutableStateOf(false) }
     var linkError by remember { mutableStateOf<String?>(null) }
     var lines by remember { mutableStateOf(listOf("DESKTOP LINK - connect first, Sir.")) }
+    var partialText by remember { mutableStateOf<String?>(null) }
     var thinking by remember { mutableStateOf(false) }
     var pendingConfirm by remember { mutableStateOf<Pair<String, String>?>(null) }
     var lastEventId by remember { mutableStateOf(0) }
@@ -76,10 +80,15 @@ fun DesktopScreen(settings: SettingsStore.Settings, onBack: () -> Unit) {
                     lastEventId = maxOf(lastEventId, event.optInt("id", lastEventId))
                     when (event.optString("type")) {
                         "user" -> withContext(Dispatchers.Main) {
+                            partialText = null   // a new turn clears any stale streaming bubble
                             line("YOU: " + event.optString("text"))
+                        }
+                        "partial" -> withContext(Dispatchers.Main) {
+                            partialText = event.optString("text") + " ▌"
                         }
                         "reply" -> withContext(Dispatchers.Main) {
                             thinking = false
+                            partialText = null
                             line("J.A.R.V.I.S.: " + event.optString("text"))
                         }
                         "status" -> withContext(Dispatchers.Main) {
@@ -197,11 +206,19 @@ fun DesktopScreen(settings: SettingsStore.Settings, onBack: () -> Unit) {
             return@Column
         }
 
+        val listState = rememberLazyListState()
+        // Keep the growing streaming bubble in view as it accumulates text.
+        LaunchedEffect(partialText) {
+            if (partialText != null) {
+                listState.animateScrollToItem(lines.size)
+            }
+        }
         LazyColumn(
             Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .padding(horizontal = 14.dp),
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(lines.size) { index ->
@@ -210,6 +227,15 @@ fun DesktopScreen(settings: SettingsStore.Settings, onBack: () -> Unit) {
                     color = if (lines[index].startsWith("»")) HudColors.Amber else HudColors.Cyan,
                     fontSize = 13.sp,
                 )
+            }
+            partialText?.let { partial ->
+                item {
+                    Text(
+                        "J.A.R.V.I.S.: " + partial,
+                        color = HudColors.Cyan.copy(alpha = 0.55f),
+                        fontSize = 13.sp,
+                    )
+                }
             }
             if (thinking) {
                 item { Text("desktop agent is working...", color = HudColors.Amber, fontSize = 12.sp) }
