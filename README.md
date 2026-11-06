@@ -26,6 +26,13 @@ Requires Android 10+ (API 29).
 | **APPS ▲** | Full drawer of every launchable app |
 | **⚙** | Brain configuration |
 
+## DESK and LOG — the desktop link
+
+- **DESK ⌁** — the full desktop agent in your HUD: every desktop tool, in-place APPROVE/DENY on gated actions, and replies streaming in as they form.
+- **LOG** — your desktop conversation sessions with full transcripts, browsable straight from the HUD.
+- **Setup (⚙)** — one screen for everything: brain (provider + API key, validated by TEST LINK) and the desktop Bridge address.
+- DESK and LOG both require `jarvis serve` running on the desktop (PRO).
+
 Providers: Z.AI (GLM), OpenAI, Zhipu (CN), Gemini, Ollama (local), or any OpenAI-compatible endpoint. On the emulator use `http://10.0.2.2:11434/v1` to reach an Ollama on the host.
 
 ## Security model
